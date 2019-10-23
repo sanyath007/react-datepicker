@@ -1,4 +1,4 @@
-import styled from 'style-components';
+import styled from 'styled-components';
 
 export const Arrow = styled.button`
   appearance: none;
@@ -24,7 +24,7 @@ export const ArrowLeft = styled(Arrow)`
 
 export const ArrowRight = styled(Arrow)`
   border-left: 2.4em solid #ccc;
-  left: 1.5rem;
+  right: 1.5rem;
   :hover {
     border-left-color: #06c;
   }

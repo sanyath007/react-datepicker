@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from "react";
 import PropTypes from "prop-types";
-import * as Styled from "./styles.js";
+import * as Styled from "./styles";
 import calendar, {
   isDate,
   isSameDay,
@@ -27,7 +27,7 @@ class Calendar extends Component {
 
   componentDidUpdate(prevProps) {
     const { date, onDateChanged } = this.props;
-    const { date, prevDate } = prevProps;
+    const { date: prevDate } = prevProps;
     const dateMatch = date == prevDate || isSameDay(date, prevDate);
 
     !dateMatch &&
@@ -48,6 +48,12 @@ class Calendar extends Component {
   resolveStateFromDate(date) {
     const isDateObject = isDate(date);
     const _date = isDateObject ? date : new Date();
+
+    return {
+      current: isDateObject ? date : null,
+      month: +_date.getMonth() + 1,
+      year: _date.getFullYear()
+    };
   }
 
   resolveStateFromProp() {
@@ -62,6 +68,18 @@ class Calendar extends Component {
     return calendar(calendarMonth, calendarYear);
   };
 
+  gotoDate = date => event => {
+    event && event.preventDefault();
+    
+    const { current } = this.state;
+    const { onDateChanged } = this.props;
+
+    !(current && isSameDay(date, current)) &&
+      this.setState(this.resolveStateFromDate(date), () => {
+        typeof onDateChanged === "function" && onDateChanged(date);
+      });
+  }
+  
   /** 
    * Render the month and year header with arrow controls
    * for navigating through months and years
@@ -128,7 +146,7 @@ class Calendar extends Component {
     const props = { index, inMonth, onClick, title: _date.toDateString() };
 
     const DateComponent = isCurrent
-      ? Styled.HightlightedCalendarDate
+      ? Styled.HighlightedCalendarDate
       : isToday
         ? Styled.TodayCalendarDate
         : Styled.CalendarDate;
