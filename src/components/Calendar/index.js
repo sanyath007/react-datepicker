@@ -42,7 +42,7 @@ class Calendar extends Component {
   }
 
   clearDayTimeout = () => {
-    this.dayTimeout && this.clearTimeout(this.dayTimeout);
+    this.dayTimeout && clearTimeout(this.dayTimeout);
   }
 
   resolveStateFromDate(date) {
@@ -79,7 +79,46 @@ class Calendar extends Component {
         typeof onDateChanged === "function" && onDateChanged(date);
       });
   }
-  
+
+  gotoPreviousMonth = () => {
+    const { month, year } = this.state;
+    this.setState(getPreviousMonth(month, year));
+  }
+
+  gotoNextMonth = () => {
+    const { month, year } = this.state;
+    this.setState(getNextMonth(month, year));
+  }
+
+  gotoPreviousYear = () => {
+    const { year } = this.state;
+    this.setState({ year: year - 1 });
+  }
+
+  gotoNextYear = () => {
+    const { year } = this.state;
+    this.setState({ year: year + 1 });
+  }
+
+  handlePressure = fn => {
+    if (typeof fn === "function") {
+      fn();
+      this.pressureTimeout = setTimeout(() => {
+        this.pressureTimer = setInterval(fn, 100);
+      }, 500);
+    }
+  }
+
+  clearPressureTimer = () => {
+    this.pressureTimer && clearInterval(this.pressureTimer);
+    this.pressureTimeout && clearTimeout(this.pressureTimeout);
+  }
+
+  handlePrevious = event => {
+    event && event.preventDefault();
+    const fn = event.shiftKey ? this.gotoPreviousYear : this.gotoPreviousMonth;
+    this.handlePressure(fn);
+  }
   /** 
    * Render the month and year header with arrow controls
    * for navigating through months and years
